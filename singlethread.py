@@ -39,7 +39,7 @@ def load_proxies():
     print(len(proxies))
     return proxies
 
-def scrap_Google(pro,mydict,missing):
+def scrap_Google(pro,mydict,missing,proxies):
     res = []
     errors=[]
 
@@ -53,9 +53,11 @@ def scrap_Google(pro,mydict,missing):
             logging.debug('ID: ' + str(key[0]))
             u = unidecode.unidecode(name)
             keyword = u +  " musician"
-            arguments = {"keywords": keyword,"limit":1,"print_urls":False,"aspect_ratio":"square"}  
+            if change:
+                arguments = {"keywords": keyword,"limit":1,"print_urls":False,"aspect_ratio":"square"}
+            else:
+                arguments = {"keywords": keyword,"limit":1,"print_urls":False,"aspect_ratio":"square","proxy":pro}
             try: 
-                change = False
                 a,b = response.download(arguments)
                 lis = [v for k,v in a.items()]
                 oldPath = lis[0][0]
@@ -63,7 +65,7 @@ def scrap_Google(pro,mydict,missing):
                 st = oldPath
                 st = st.split('/')
                 folder = st[len(st)-2]
-                #shutil.rmtree('/home/pc/Desktop/work2/downloads/' + folder)
+                shutil.rmtree('/home/pc/Desktop/threading/downloads/' + folder)
                 continue
             except:
                 change = True
@@ -73,8 +75,9 @@ def scrap_Google(pro,mydict,missing):
                     missing = calc_missing()
                     r = random.choice(len(profinal))
                     pro = proxies[r]
+                    
                 errors.append(id2)
-                #shutil.rmtree('/home/pc/Desktop/work2/downloads/' + keyword)
+                shutil.rmtree('/home/pc/Desktop/threading/downloads/' + keyword)
                 continue
     try:
         f = open("erros.txt", "a")
@@ -124,7 +127,7 @@ def main():
         r = random.choice(val)
         if (len(missing)>0):
             print('Size of missing',len(missing))
-            scrap_Google(proxies[r],mydict,missing,proxies)
+            scrap_Google(None,mydict,missing,proxies)
         else:
             print('HYUURRY u did it')
             return
